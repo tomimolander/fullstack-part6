@@ -1,3 +1,5 @@
+import { setNotification } from './notificationReducer'
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -30,12 +32,19 @@ const reducer = (state = initialState, action) => {
         ...anecToChange, 
         votes: anecToChange.votes+1 
       }
+      setNotification(`you voted '${anecToChange.content}'`)
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
       return state.map(anec =>
         anec.id !== id ? anec : changedAnec 
       )
     case 'NEW_ANEC':
       const anec = asObject(action.data.content)
-      console.log('anec added: ', anec)
+      setNotification(`you created '${anec.content}'`)
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
       return [...state, anec]
     default: return state
   }
