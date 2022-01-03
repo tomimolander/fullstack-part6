@@ -1,8 +1,6 @@
 const initialState = ''
   
 const reducer = (state = initialState, action) => {
-  console.log('state now not: ', state)
-  console.log('action not', action)
   switch (action.type) {
     case 'SET_FILTER':
         return action.data

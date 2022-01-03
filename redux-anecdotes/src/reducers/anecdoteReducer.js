@@ -1,4 +1,5 @@
 import { setNotification } from './notificationReducer'
+import anecdotesService from '../services/anecdotes'
 
 const anecdotesAtStart = [
   'If it hurts, do it more often',
@@ -21,9 +22,9 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
+const reducer = (state = [], action) => {
+  //console.log('state now: ', state)
+  //console.log('action', action)
   switch (action.type) {
     case 'VOTE':
       const id = action.data.id
@@ -32,37 +33,49 @@ const reducer = (state = initialState, action) => {
         ...anecToChange, 
         votes: anecToChange.votes+1 
       }
-      setNotification(`you voted '${anecToChange.content}'`)
-      setTimeout(() => {
-        setNotification(null)
-      }, 5000)
       return state.map(anec =>
         anec.id !== id ? anec : changedAnec 
       )
     case 'NEW_ANEC':
-      const anec = asObject(action.data.content)
-      setNotification(`you created '${anec.content}'`)
-      setTimeout(() => {
-        setNotification(null)
-      }, 5000)
+      const anec = action.data
       return [...state, anec]
+    case 'INIT_ANECS':
+      return action.data
     default: return state
   }
 }
 
-export const createAnec = (content) => {
-  return {
-    type: 'NEW_ANEC',
-    data: {
-      content
-    }
+export const createAnec = (data) => {
+  return async dispatch => {
+    const newAnec = await anecdotesService.createNew(data)
+    dispatch({
+      type: 'NEW_ANEC',
+      data: newAnec,
+    })
   }
 }
 
-export const toggleVote = (id) => {
-  return {
-    type: 'VOTE',
-    data: { id }
+export const toggleVote = (anec) => {
+  const changedAnec = { 
+    ...anec, 
+    votes: anec.votes+1 
+  }
+  return async dispatch => {
+    const anecs = await anecdotesService.update(changedAnec.id, changedAnec)
+    dispatch({
+      type: 'VOTE',
+      data: anecs,
+    })
+  }
+}
+
+export const initializeAnecs = (anecs) => {
+  return async dispatch => {
+    const anecs = await anecdotesService.getAll()
+    dispatch({
+      type: 'INIT_ANECS',
+      data: anecs,
+    })
   }
 }
 

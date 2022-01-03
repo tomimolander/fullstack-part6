@@ -6,8 +6,6 @@ const Filter = () => {
   const dispatch = useDispatch()
   const handleChange = (event) => {
     dispatch(setFilter(event.target.value))
-    // input-kentän arvo muuttujassa event.target.value
-    
   }
   const style = {
     marginBottom: 10
