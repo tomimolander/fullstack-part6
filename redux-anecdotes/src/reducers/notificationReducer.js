@@ -1,4 +1,5 @@
 const initialState = null
+var timeout;
   
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -12,11 +13,12 @@ const reducer = (state = initialState, action) => {
 
 export const setNotification = (msg, time) => {
   return async dispatch => {
+    clearTimeout(timeout)
     dispatch({
       type: 'SET',
       data: msg
     })
-    setTimeout(() => {
+    timeout = setTimeout(() => {
       dispatch({
         type: 'SET',
         data: null
